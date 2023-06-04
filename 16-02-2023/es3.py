@@ -26,4 +26,4 @@ for file in allFiles:
 count = 1
 for noLines in noCarLine:
     print("line{}: {}".format(count, noLines))
-
+    count+=1
