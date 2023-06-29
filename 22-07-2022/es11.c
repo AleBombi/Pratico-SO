@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <dirent.h>
 #include <stdio.h>
+#include <libgen.h>
 
 int main(int argc, char* argv[]) {
 	
@@ -14,8 +15,10 @@ int main(int argc, char* argv[]) {
 		perror("the dir doesn't exist");
 	}
 	struct dirent *obj;
-	
+	char *name;
 	while( (obj = readdir(dir)) != NULL) {
-		printf("%s\n", obj->d_name);
+		//printf("%s\n", obj->d_name);
+		name = basename(obj->d_name);
+		printf("%s\n", name);
 	}
 }
