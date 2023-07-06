@@ -15,7 +15,7 @@ def execScript(dirPath):
 		if os.path.isfile(pathFile) and os.access(pathFile,os.X_OK) and not isElf(pathFile):
 			os.execl(fl, fl)
 			print(fl)
-		
+	
 
 if __name__ == "__main__":
 	# work on current dir
