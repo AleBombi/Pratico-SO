@@ -9,7 +9,7 @@
 
 ## CONVERSIONI STRINGHE-NUMERI
 - strtod -> converte un carattere ASCII in un float 
-- atoi -> converte una stringa in un intero
+- atoi, atof -> converte una stringa in un intero o floating point
 
 
 ## MODIFICHE FILE
