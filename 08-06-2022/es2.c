@@ -1,5 +1,7 @@
 #include <sys/stat.h>
 #include <limits.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -7,6 +9,7 @@
 #include <libgen.h>
 
 void invertiLink(char*, char*);
+void inverti(char*);
 
 int main(int argc, char* argv[]){
 	
@@ -15,35 +18,48 @@ int main(int argc, char* argv[]){
 	}
 	
 	// argv[1] indica il path del file in input
-	char *pathArg = argv[1];
-
+	char *path = argv[1];
 
 	// prendo le informazioni sull'argomento passato
 	struct stat statBuf;
-	if (lstat(pathArg, &statBuf)!=0) {
+	
+	if (lstat(path, &statBuf)!=0) {
 		printf("lstat error");
 		exit(1);
 	}
-
+	
 	// verifico che sia un soft link
-	if (!S_ISLNK(statBuf.st_mode)) {
-		printf("the argument isn't a soft link");
-		exit(1);
-	} 
-
-	// prendo il realpath del file puntato usando realpath()
-	char *absPath = realpath(pathArg, NULL);
-	
-	if (absPath==NULL) {
-		printf("error realpath");
-		exit(1);
+	if (S_ISLNK(statBuf.st_mode)) {
+		inverti(path);
+	} 	
+	// verifico che sia una directory
+	else if (S_ISDIR(statBuf.st_mode)) {
+		
+		char* dirPath = realpath(path, NULL);
+		DIR* dir = opendir(dirPath);
+		struct dirent *entry;
+		
+		while( (entry = readdir(dir)) != NULL) {
+		
+			if (entry->d_type == DT_LNK) {
+				char tmpPath[PATH_MAX];
+				memset(tmpPath, 0, PATH_MAX);
+				snprintf(tmpPath, PATH_MAX, "%s/%s", dirPath, entry->d_name);
+				inverti(tmpPath);
+			}	
+		} 		
 	}
-	
-
-	invertiLink(pathArg, absPath);
-
 	return 0;
+}
 
+void inverti(char* sflink) {
+
+	char *absPath = realpath(sflink, NULL);
+	if (absPath == NULL){
+		printf("realpath error\n");
+		return;
+	}
+	invertiLink(sflink, absPath);
 }
 
 void invertiLink(char* pathSl, char* pathAf) {
